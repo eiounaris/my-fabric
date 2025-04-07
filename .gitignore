@@ -1,2 +1,3 @@
 channel-artifacts/
-organizations/
+organizations/ordererOrganizations
+organizations/peerOrganizations
