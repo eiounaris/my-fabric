@@ -1,0 +1,79 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '3.7'
+
+volumes:
+  orderer1.example.com:
+
+networks:
+  test:
+    name: fabric_test
+
+services:
+
+  orderer1.example.com:
+    container_name: orderer1.example.com
+    image: hyperledger/fabric-orderer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7051
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+      - ORDERER_ADMIN_TLS_ENABLED=true
+      - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_ADMIN_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:17051
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer1.example.com:27051
+      - ORDERER_METRICS_PROVIDER=prometheus
+    working_dir: /root
+    command: orderer
+    volumes:
+        - ../organizations/ordererOrganizations/example.com/orderers/orderer1.example.com/msp:/var/hyperledger/orderer/msp
+        - ../organizations/ordererOrganizations/example.com/orderers/orderer1.example.com/tls/:/var/hyperledger/orderer/tls
+        - orderer1.example.com:/var/hyperledger/production/orderer
+    ports:
+      - 7051:7051
+      - 17051:17051
+      - 27051:27051
+    networks:
+      - test
+    extra_hosts:
+      - "orderer0.example.com:192.168.128.50"
+      # - "orderer1.example.com:192.168.128.51"
+      - "orderer2.example.com:192.168.128.52"
+      - "orderer3.example.com:192.168.128.53"
+      - "orderer4.example.com:192.168.128.54"
+      - "orderer1.example.com:192.168.128.51"
+      - "peer0.org0.example.com:192.168.128.50"
+      - "peer1.org0.example.com:192.168.128.50"
+      - "peer2.org0.example.com:192.168.128.50"
+      - "peer3.org0.example.com:192.168.128.50"
+      - "peer4.org0.example.com:192.168.128.50"
+      - "peer0.org1.example.com:192.168.128.51"
+      - "peer1.org1.example.com:192.168.128.51"
+      - "peer2.org1.example.com:192.168.128.51"
+      - "peer3.org1.example.com:192.168.128.51"
+      - "peer4.org1.example.com:192.168.128.51"
+      - "peer0.org2.example.com:192.168.128.52"
+      - "peer1.org2.example.com:192.168.128.52"
+      - "peer2.org2.example.com:192.168.128.52"
+      - "peer3.org2.example.com:192.168.128.52"
+      - "peer4.org2.example.com:192.168.128.52"
