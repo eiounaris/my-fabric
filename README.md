@@ -1,4 +1,6 @@
-## 生成证书和MSP目录
+# 两个排序节点，十个对等节点
+
+## 1. 生成证书和 MSP 目录
 
 ```bash
 # 生成Orderer MSP
@@ -15,7 +17,7 @@ scp -r organizations/ordererOrganizations organizations/peerOrganizations futi@1
 
 ```
 
-## 启动Fabric节点
+## 2. 启动 Fabric 节点
 
 ```bash
 # 启动 orderer0 和  peer0-peer4 of org0
@@ -38,7 +40,7 @@ docker compose \
 
 ```
 
-## 导入全局环境变量
+## 3. 导入全局环境变量
 
 ```bash
 # 导入 configtx.yaml 所在目录
@@ -66,7 +68,7 @@ export CC_SEQUENCE=1
 
 ```
 
-## 设置DNS
+## 4. 设置 DNS
 
 ```bash
 sudo vim /etc/hosts
@@ -88,9 +90,7 @@ sudo vim /etc/hosts
 192.168.128.51 peer4.org1.example.com
 ```
 
-
-
-## 创建通道，节点加入通道
+## 5. 创建通道，节点加入通道
 
 ```bash
 # 创建通道创世区块
@@ -128,7 +128,7 @@ peer channel join -b ${BLOCKFILE}
 
 ```
 
-## 创建 Org 组织锚节点
+## 6. 创建 Org 组织锚节点
 
 ```bash
 ###！！！ (若在通道配置文件设置了锚节点，则忽略以下操作)
@@ -200,7 +200,7 @@ peer channel update -o orderer1.example.com:7050 --ordererTLSHostnameOverride or
 
 ```
 
-## 部署链码
+## 7. 部署链码
 
 ```bash
 # 打包链码
@@ -229,17 +229,20 @@ export CORE_PEER_ADDRESS=peer0.org1.example.com:9050
 peer lifecycle chaincode install ${CC_NAME}.tar.gz
 
 
+
 # 链码ID环境变量
 export PACKAGE_ID=$(peer lifecycle chaincode calculatepackageid ${CC_NAME}.tar.gz)
 
 
 
+# 验证 org0 链码结构
 export CORE_PEER_LOCALMSPID=Org0MSP
 export CORE_PEER_TLS_ROOTCERT_FILE=${PEER0_ORG0_CA}
 export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org0.example.com/users/Admin@org0.example.com/msp
 export CORE_PEER_ADDRESS=peer0.org0.example.com:8050
 peer lifecycle chaincode queryinstalled --output json
 
+# 验证 org0 链码结构
 export CORE_PEER_LOCALMSPID=Org1MSP
 export CORE_PEER_TLS_ROOTCERT_FILE=${PEER0_ORG1_CA}
 export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
@@ -248,12 +251,14 @@ peer lifecycle chaincode queryinstalled --output json
 
 
 
+# org0 提交链码
 export CORE_PEER_LOCALMSPID=Org0MSP
 export CORE_PEER_TLS_ROOTCERT_FILE=${PEER0_ORG0_CA}
 export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org0.example.com/users/Admin@org0.example.com/msp
 export CORE_PEER_ADDRESS=peer0.org0.example.com:8050
 peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer0.example.com --tls --cafile "$ORDERER_CA" --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --package-id ${PACKAGE_ID} --sequence ${CC_SEQUENCE}
 
+# org1 提交链码
 export CORE_PEER_LOCALMSPID=Org1MSP
 export CORE_PEER_TLS_ROOTCERT_FILE=${PEER0_ORG1_CA}
 export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
@@ -262,13 +267,14 @@ peer lifecycle chaincode approveformyorg -o localhost:7051 --ordererTLSHostnameO
 
 
 
-
+# 从 org0 验证是否可以提交链码
 export CORE_PEER_LOCALMSPID=Org0MSP
 export CORE_PEER_TLS_ROOTCERT_FILE=${PEER0_ORG0_CA}
 export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org0.example.com/users/Admin@org0.example.com/msp
 export CORE_PEER_ADDRESS=peer0.org0.example.com:8050
 peer lifecycle chaincode checkcommitreadiness --channelID ${CHANNEL_NAME} --name ${CC_NAME} --version ${CC_VERSION} --sequence ${CC_SEQUENCE} --output json
 
+# 从 org1 验证是否可以提交链码
 export CORE_PEER_LOCALMSPID=Org1MSP
 export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
 export CORE_PEER_MSPCONFIGPATH=$PWD/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
@@ -277,17 +283,22 @@ peer lifecycle chaincode checkcommitreadiness --channelID ${CHANNEL_NAME} --name
 
 
 
+# 从 orderer0 提交链码
 peer lifecycle chaincode commit -o orderer0.example.com:7050 --ordererTLSHostnameOverride orderer0.example.com --tls --cafile "$ORDERER_CA" --channelID ${CHANNEL_NAME} --name ${CC_NAME} --version ${CC_VERSION} --sequence ${CC_SEQUENCE} --peerAddresses peer0.org0.example.com:8050 --tlsRootCertFiles $PEER0_ORG0_CA --peerAddresses peer0.org1.example.com:9050 --tlsRootCertFiles $PEER0_ORG1_CA
 
+# 从 orderer0 提交链码
+peer lifecycle chaincode commit -o orderer1.example.com:7051 --ordererTLSHostnameOverride orderer1.example.com --tls --cafile "$ORDERER_CA" --channelID ${CHANNEL_NAME} --name ${CC_NAME} --version ${CC_VERSION} --sequence ${CC_SEQUENCE} --peerAddresses peer0.org0.example.com:8050 --tlsRootCertFiles $PEER0_ORG0_CA --peerAddresses peer0.org1.example.com:9050 --tlsRootCertFiles $PEER0_ORG1_CA
 
 
+
+# 从 org0 验证提交链码
 export CORE_PEER_LOCALMSPID=Org0MSP
 export CORE_PEER_TLS_ROOTCERT_FILE=${PEER0_ORG0_CA}
 export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org0.example.com/users/Admin@org0.example.com/msp
 export CORE_PEER_ADDRESS=peer0.org0.example.com:8050
 peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME}
 
-
+# 从 org1 验证提交链码
 export CORE_PEER_LOCALMSPID=Org1MSP
 export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
 export CORE_PEER_MSPCONFIGPATH=$PWD/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
@@ -296,7 +307,7 @@ peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NA
 
 ```
 
-## 调用链码
+## 8. 调用链码
 
 ```bash
 export FABRIC_CFG_PATH=$PWD/config/ # set the FABRIC_CFG_PATH to point to the core.yaml file in the fabric-samples repository
@@ -336,7 +347,7 @@ peer chaincode query -C ${CHANNEL_NAME} -n ${CC_NAME} -c '{"Args":["ReadAsset","
 
 ```
 
-## 关闭 fabric
+## 9. 关闭 fabric
 
 ```bash
 # 关闭 fabric（不影响后续再启动）
