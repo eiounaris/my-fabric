@@ -1,3 +1,4 @@
 channel-artifacts/
 organizations/ordererOrganizations
 organizations/peerOrganizations
+mychaincode.tar.gz
