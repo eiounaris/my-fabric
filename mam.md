@@ -2,9 +2,6 @@ sudo vim /etc/hosts
 
 192.168.128.50 orderer0.example.com
 192.168.128.51 orderer1.example.com
-192.168.128.52 orderer2.example.com
-192.168.128.53 orderer3.example.com
-192.168.128.54 orderer4.example.com
 
 192.168.128.50 peer0.org0.example.com
 192.168.128.50 peer1.org0.example.com

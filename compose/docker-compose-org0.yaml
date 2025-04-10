@@ -46,9 +46,14 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer0org0"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+      #Generic peer variables
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_test
     volumes:
       - ../organizations/peerOrganizations/org0.example.com/peers/peer0.org0.example.com:/etc/hyperledger/fabric
       - peer0.org0.example.com:/var/hyperledger/production
+      - ./docker/peercfg:/etc/hyperledger/peercfg
+      - /var/run/docker.sock:/host/var/run/docker.sock
     working_dir: /root
     command: peer node start
     ports:
@@ -101,9 +106,14 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer1org0"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+      #Generic peer variables
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_test
     volumes:
       - ../organizations/peerOrganizations/org0.example.com/peers/peer1.org0.example.com:/etc/hyperledger/fabric
       - peer1.org0.example.com:/var/hyperledger/production
+      - ./docker/peercfg:/etc/hyperledger/peercfg
+      - /var/run/docker.sock:/host/var/run/docker.sock
     working_dir: /root
     command: peer node start
     ports:
@@ -156,9 +166,14 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer2org0"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+      #Generic peer variables
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_test
     volumes:
       - ../organizations/peerOrganizations/org0.example.com/peers/peer2.org0.example.com:/etc/hyperledger/fabric
       - peer2.org0.example.com:/var/hyperledger/production
+      - ./docker/peercfg:/etc/hyperledger/peercfg
+      - /var/run/docker.sock:/host/var/run/docker.sock
     working_dir: /root
     command: peer node start
     ports:
@@ -211,9 +226,14 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer3org0"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+      #Generic peer variables
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_test
     volumes:
       - ../organizations/peerOrganizations/org0.example.com/peers/peer3.org0.example.com:/etc/hyperledger/fabric
       - peer3.org0.example.com:/var/hyperledger/production
+      - ./docker/peercfg:/etc/hyperledger/peercfg
+      - /var/run/docker.sock:/host/var/run/docker.sock
     working_dir: /root
     command: peer node start
     ports:
@@ -266,9 +286,14 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer4org0"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+      #Generic peer variables
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_test
     volumes:
       - ../organizations/peerOrganizations/org0.example.com/peers/peer4.org0.example.com:/etc/hyperledger/fabric
       - peer4.org0.example.com:/var/hyperledger/production
+      - ./docker/peercfg:/etc/hyperledger/peercfg
+      - /var/run/docker.sock:/host/var/run/docker.sock
     working_dir: /root
     command: peer node start
     ports:
